@@ -25,9 +25,9 @@ class HomeActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.menu_option1 -> {
-                        // Handle "Option 1" (Home) click
-                        val intent = Intent(this, HomeActivity::class.java)
-                        startActivity(intent)
+//                        // Handle "Option 1" (Home) click
+//                        val intent = Intent(this, HomeActivity::class.java)
+//                        startActivity(intent)
                         true
                     }
                     R.id.menu_option2 -> {
