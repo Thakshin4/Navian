@@ -1,0 +1,36 @@
+<!-- activity_tray_popup.xml -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/observation_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Observation"
+        android:onClick="onButton1Click" />
+
+    <TextView
+        android:id="@+id/description1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Record your one-off sighting of a bird"
+        android:layout_below="@+id/observation_button" />
+
+    <Button
+        android:id="@+id/session_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Begin Session"
+        android:layout_below="@+id/description1"
+        android:onClick="onButton2Click" />
+
+    <TextView
+        android:id="@+id/description2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start a birding session and log birds as you see them"
+        android:layout_below="@+id/session_button" />
+
+</RelativeLayout>
