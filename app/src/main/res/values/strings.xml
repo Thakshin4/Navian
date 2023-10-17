@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Navian</string>
+    <string name="mapbox_access_token">YOUR_MAPBOX_ACCESS_TOKEN</string>
+
 </resources>
