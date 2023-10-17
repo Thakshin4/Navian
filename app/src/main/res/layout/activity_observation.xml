@@ -27,6 +27,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Date and Time"
+        android:layout_marginBottom="16dp"
+        android:inputType="none"
+        android:focusable="false"
+        android:focusableInTouchMode="false" />
+
+    <Button
+        android:id="@+id/choose_date_time_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose Date and Time"
         android:layout_marginBottom="16dp" />
 
     <EditText
