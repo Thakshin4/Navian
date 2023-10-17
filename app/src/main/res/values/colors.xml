@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- res/values/colors.xml -->
+
+    <color name="bluePrimary">#2196F3</color> <!-- Blue color for the primary theme -->
+    <color name="bluePrimaryDark">#1976D2</color> <!-- Darker shade of blue for the primary theme -->
+    <color name="orangeAccent">#FF5722</color> <!-- Orange color for accents -->
+    <color name="whiteBackground">#FFFFFF</color> <!-- White background color -->
+
+
 </resources>
