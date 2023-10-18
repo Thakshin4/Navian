@@ -50,8 +50,5 @@ class SettingsActivity : AppCompatActivity() {
         val maxDistanceInKilometers = sharedPreferences.getFloat("maxDistance", DEFAULT_MAX_DISTANCE_KM.toFloat())
 
         val maxDistance = convertDistance(maxDistanceInKilometers.toDouble(), isMetric)
-
-
-
     }
 }

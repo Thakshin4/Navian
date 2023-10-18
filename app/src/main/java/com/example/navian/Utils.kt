@@ -5,7 +5,5 @@ class UnitConverter {
         fun kilometersToMiles(kilometers: Double): Double {
             return kilometers * 0.621371
         }
-
-
     }
 }
