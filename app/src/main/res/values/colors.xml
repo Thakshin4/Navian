@@ -2,10 +2,11 @@
 <resources>
     <!-- res/values/colors.xml -->
 
-    <color name="bluePrimary">#2196F3</color> <!-- Blue color for the primary theme -->
-    <color name="bluePrimaryDark">#1976D2</color> <!-- Darker shade of blue for the primary theme -->
-    <color name="orangeAccent">#FF5722</color> <!-- Orange color for accents -->
-    <color name="whiteBackground">#FFFFFF</color> <!-- White background color -->
+    <color name="bluePrimary">#29B6F6</color> <!-- Blue color for the primary theme -->
+    <color name="bluePrimaryDark">#0277BD</color> <!-- Darker shade of blue for the primary theme -->
+    <color name="orangeAccent">#FF8A65</color> <!-- Orange color for accents -->
+    <color name="light">#E0F7FA</color> <!-- White background color -->
+    <color name="dark">#121212</color>
 
 
 </resources>

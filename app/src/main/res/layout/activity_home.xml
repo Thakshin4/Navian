@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeActivity">
+    tools:context=".HomeActivity"
+    android:theme="@style/AppTheme">
 
     <!-- Buttons at the bottom of the screen with even spacing -->
 
@@ -29,6 +30,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/tray_button"
         app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/ImageButtonStyle"
         />
 
     <ImageButton
@@ -39,6 +41,7 @@
         app:layout_constraintLeft_toRightOf="@+id/menu_button"
         app:layout_constraintRight_toLeftOf="@+id/settings_button"
         app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/ImageButtonStyle"
         />
 
     <ImageButton
@@ -49,5 +52,6 @@
         app:layout_constraintLeft_toRightOf="@+id/tray_button"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/ImageButtonStyle"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
