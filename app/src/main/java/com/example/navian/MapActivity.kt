@@ -36,7 +36,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MapActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var mapView: MapView? = null
-
+    val hotspotsList = mutableListOf<Pair<Double, Double>>()
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +50,7 @@ class MapActivity : AppCompatActivity() {
 
         val eBirdService = retrofit.create(EBirdService::class.java)
 
-        val apiKey = "YOUR_API_KEY" // Replace with your eBird API key
+        val apiKey = "t1c9clcjj40b" // Replace with your eBird API key
         val latitude = 40.0 // Replace with user's latitude
         val longitude = -74.0 // Replace with user's longitude
         val maxResults = 10
@@ -70,17 +70,25 @@ class MapActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<Hotspot>>, response: Response<List<Hotspot>>) {
                 if (response.isSuccessful) {
                     val hotspots = response.body()
-                    // Process the list of hotspots as needed
+
+                    // Process the list of hotspots and extract latitude and longitude
+                    hotspots?.forEach { hotspot ->
+                        val latitude = hotspot.locLatitude
+                        val longitude = hotspot.locLongitude
+                        hotspotsList.add(Pair(latitude, longitude))
+                    }
+
+                    // Now, hotspotsList contains pairs of latitude and longitude
                 } else {
                     // Handle API error
                 }
             }
 
             override fun onFailure(call: Call<List<Hotspot>>, t: Throwable) {
-                TODO("Not yet implemented")
+                // Handle network failure
             }
-
         })
+
 
         // Initialize the FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -98,9 +106,11 @@ class MapActivity : AppCompatActivity() {
         mapView?.getMapboxMap()?.loadStyleUri(
             Style.MAPBOX_STREETS
         ) { addAnnotationToMap() }
+        mapView?.getMapboxMap()?.loadStyleUri(
+            Style.MAPBOX_STREETS
+        ) { addAnnotationsForHotspots(hotspotsList) }
     }
 
-    // Mapbox
     private fun addAnnotationToMap() {
         // Create an instance of the Annotation API and get the PointAnnotationManager.
         bitmapFromDrawableRes(
@@ -108,7 +118,7 @@ class MapActivity : AppCompatActivity() {
             R.drawable.baseline_navigation_24
         )?.let {
             val annotationApi = mapView?.annotations
-            val pointAnnotationManager = annotationApi?.createPointAnnotationManager()
+            val pointAnnotationManager = annotationApi?.createPointAnnotationManager(mapView!!)
 
             // Check for location permission
             if (checkLocationPermission()) {
@@ -148,51 +158,34 @@ class MapActivity : AppCompatActivity() {
             }
         }
     }
-
-    // Inside your MapActivity class
-    private fun addAnnotationsForHotspots(hotspots: List<Hotspot>) {
+    private fun addAnnotationsForHotspots(hotspots: MutableList<Pair<Double, Double>>) {
         // Create an instance of the Annotation API and get the PointAnnotationManager.
-        val annotationApi = mapView?.annotations
-        val pointAnnotationManager = annotationApi?.createPointAnnotationManager()
-
-        // Iterate through the list of hotspots and add an annotation for each location
-        for (hotspot in hotspots) {
-            val latitude = hotspot.locLatitude
-            val longitude = hotspot.locLongitude
-
-            // Define a geographic coordinate based on the hotspot's location
-            val hotspotLocation = Point.fromLngLat(longitude, latitude)
-
-            // Set options for the resulting symbol layer.
-            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-                .withPoint(hotspotLocation)
-                .withIconImage(getHotspotIcon().toString()) // You can define a custom hotspot icon
-                .withIconSize(1.0)
-
-            // Add the resulting pointAnnotation to the map.
-            pointAnnotationManager?.create(pointAnnotationOptions)
+        for (hotspot in hotspots)
+        {
+            bitmapFromDrawableRes(
+                this@MapActivity,
+                R.drawable.baseline_visibility_24
+            )?.let {
+                val annotationApi = mapView?.annotations
+                val pointAnnotationManager = annotationApi?.createPointAnnotationManager(mapView!!)
+                // Set options for the resulting symbol layer.
+                val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                    // Define a geographic coordinate.
+                    .withPoint(Point.fromLngLat(hotspot.first, hotspot.second))
+                    // Specify the bitmap you assigned to the point annotation
+                    // The bitmap will be added to map style automatically.
+                    .withIconImage(it)
+                // Add the resulting pointAnnotation to the map.
+                pointAnnotationManager?.create(pointAnnotationOptions)
+            }
         }
     }
+
 
     // Define a custom hotspot icon (you can place this outside the MapActivity class)
     fun getHotspotIcon(): Int {
         // Define your custom hotspot icon here
         return R.drawable.baseline_visibility_24 // This should correspond to an icon in your map style
-    }
-
-    // After successfully fetching the list of hotspots
-    fun onResponse(call: Call<List<Hotspot>>, response: Response<List<Hotspot>>) {
-        if (response.isSuccessful) {
-            val hotspots = response.body()
-            if (hotspots != null) {
-                // Add the hotspots to the map
-                addAnnotationsForHotspots(hotspots)
-            } else {
-                // Handle the case when the list of hotspots is empty
-            }
-        } else {
-            // Handle API error
-        }
     }
 
     private fun checkLocationPermission(): Boolean {
