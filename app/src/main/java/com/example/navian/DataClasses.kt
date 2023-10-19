@@ -9,3 +9,10 @@ data class BirdObservation(
     val notes: String,
     val imageUri: Uri? = null
 )
+data class Hotspot(
+    val locId: String,
+    val locName: String,
+    val locLongitude: Double,
+    val locLatitude: Double,
+    // Add more properties as needed
+)

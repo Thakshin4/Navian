@@ -12,6 +12,7 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
@@ -25,6 +26,11 @@ import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MapActivity : AppCompatActivity() {
@@ -35,6 +41,46 @@ class MapActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
+        // Ebird
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.ebird.org/v2/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val eBirdService = retrofit.create(EBirdService::class.java)
+
+        val apiKey = "YOUR_API_KEY" // Replace with your eBird API key
+        val latitude = 40.0 // Replace with user's latitude
+        val longitude = -74.0 // Replace with user's longitude
+        val maxResults = 10
+        val distance = 25.0 // Search radius in kilometers
+        val daysBack = 30 // Days back to search for sightings
+
+        val call = eBirdService.getNearbyHotspots(
+            latitude,
+            longitude,
+            maxResults,
+            distance,
+            daysBack,
+            apiKey
+        )
+
+        call.enqueue(object : Callback<List<Hotspot>> {
+            override fun onResponse(call: Call<List<Hotspot>>, response: Response<List<Hotspot>>) {
+                if (response.isSuccessful) {
+                    val hotspots = response.body()
+                    // Process the list of hotspots as needed
+                } else {
+                    // Handle API error
+                }
+            }
+
+            override fun onFailure(call: Call<List<Hotspot>>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
 
         // Initialize the FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -54,6 +100,7 @@ class MapActivity : AppCompatActivity() {
         ) { addAnnotationToMap() }
     }
 
+    // Mapbox
     private fun addAnnotationToMap() {
         // Create an instance of the Annotation API and get the PointAnnotationManager.
         bitmapFromDrawableRes(
@@ -69,9 +116,17 @@ class MapActivity : AppCompatActivity() {
                 fusedLocationClient.lastLocation.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val location: Location? = task.result
+                        val alertDialog = AlertDialog.Builder(this)
+                        alertDialog.setTitle("Current Location")
+                        alertDialog.setMessage(location.toString())
+                        alertDialog.setPositiveButton("OK") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        alertDialog.show()
                         if (location != null) {
                             // Define a geographic coordinate based on the current location
                             val currentLocation = Point.fromLngLat(location.longitude, location.latitude)
+
 
                             // Set options for the resulting symbol layer.
                             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
@@ -94,6 +149,51 @@ class MapActivity : AppCompatActivity() {
         }
     }
 
+    // Inside your MapActivity class
+    private fun addAnnotationsForHotspots(hotspots: List<Hotspot>) {
+        // Create an instance of the Annotation API and get the PointAnnotationManager.
+        val annotationApi = mapView?.annotations
+        val pointAnnotationManager = annotationApi?.createPointAnnotationManager()
+
+        // Iterate through the list of hotspots and add an annotation for each location
+        for (hotspot in hotspots) {
+            val latitude = hotspot.locLatitude
+            val longitude = hotspot.locLongitude
+
+            // Define a geographic coordinate based on the hotspot's location
+            val hotspotLocation = Point.fromLngLat(longitude, latitude)
+
+            // Set options for the resulting symbol layer.
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(hotspotLocation)
+                .withIconImage(getHotspotIcon().toString()) // You can define a custom hotspot icon
+                .withIconSize(1.0)
+
+            // Add the resulting pointAnnotation to the map.
+            pointAnnotationManager?.create(pointAnnotationOptions)
+        }
+    }
+
+    // Define a custom hotspot icon (you can place this outside the MapActivity class)
+    fun getHotspotIcon(): Int {
+        // Define your custom hotspot icon here
+        return R.drawable.baseline_visibility_24 // This should correspond to an icon in your map style
+    }
+
+    // After successfully fetching the list of hotspots
+    fun onResponse(call: Call<List<Hotspot>>, response: Response<List<Hotspot>>) {
+        if (response.isSuccessful) {
+            val hotspots = response.body()
+            if (hotspots != null) {
+                // Add the hotspots to the map
+                addAnnotationsForHotspots(hotspots)
+            } else {
+                // Handle the case when the list of hotspots is empty
+            }
+        } else {
+            // Handle API error
+        }
+    }
 
     private fun checkLocationPermission(): Boolean {
         val permission = Manifest.permission.ACCESS_FINE_LOCATION
